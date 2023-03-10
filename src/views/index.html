@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tailwind playground</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
+</head>
+
+<body class="">
+    <div class="bg-gray-100 min-h-screen">
+        <nav class="bg-slate-800">
+            <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+                <div class="relative flex h-16 items-center justify-between">
+                    <div class="flex flex-1 items-center justify-center">
+                        <div class="flex items-center space-x-4">
+                            <a href="#" id="delete-button" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Delete</a>
+                            <img class="block h-8 w-auto" src="favicon.ico" alt="Your Company">
+                            <a href="#" id="next-button" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Next</a>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </nav>
+        <div id="container" class="relative bg-white mx-auto my-8 rounded-lg max-w-lg px-6 pt-10 pb-8 shadow-xl ring-1 ring-gray-900/5 ">
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
