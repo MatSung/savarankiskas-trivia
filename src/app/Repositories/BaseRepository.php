@@ -19,7 +19,7 @@ class BaseRepository
                 \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'
             ]);
         } catch (\PDOException $e) {
-            // error handling
+            throw new \RuntimeException('Server error', 500);
         }
     }
 

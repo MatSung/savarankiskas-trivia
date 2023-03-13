@@ -18,7 +18,7 @@
                     <div class="flex flex-1 items-center justify-center">
                         <div class="flex items-center space-x-4">
                             <a href="#" id="delete-button" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Delete</a>
-                            <img class="block h-8 w-auto" src="favicon.ico" alt="Your Company">
+                            <img class="block h-8 w-auto" src="favicon.ico" alt="logo">
                             <a href="#" id="next-button" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Next</a>
                         </div>
                     </div>
@@ -26,8 +26,21 @@
                 </div>
             </div>
         </nav>
-        <div id="container" class="relative bg-white mx-auto my-8 rounded-lg max-w-lg px-6 pt-10 pb-8 shadow-xl ring-1 ring-gray-900/5 ">
+        <div class="relative bg-white mx-auto my-8 rounded-lg max-w-lg px-6 pt-10 pb-8 shadow-xl ring-1 ring-gray-900/5 ">
+            <div id="spinner-container" class="spinner">
+                <div class="flex items-center justify-center">
+                    <div
+                      class="inline-block h-12 w-12 animate-spin rounded-full text-slate-800 border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+                      role="status">
+                      <span
+                        class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"
+                        >Loading...</span
+                      >
+                    </div>
+                  </div>
+            </div>
+            <div id="container"></div>
         </div>
     </div>
-    <script src="app.js"></script>
+    <script type="module" src="app.js"></script>
 </body>

@@ -9,13 +9,19 @@ use RuntimeException;
 
 class ProgressController
 {
+
     function __construct(private ProgressRepository $progressRepository)
     {
     }
 
+    private function getIpAddress(Request $request): string
+    {
+        return $request->getServerParams()['REMOTE_ADDR'];
+    }
+
     public function get(Request $request, Response $response, array $args): Response 
     {
-        $ip = $request->getServerParams()['REMOTE_ADDR'];
+        $ip = $this->getIpAddress($request);
 
         try {
             $payload = $this->progressRepository->get($ip);
@@ -30,7 +36,7 @@ class ProgressController
 
     public function save(Request $request, Response $response, array $args): Response 
     {
-        $ip = $request->getServerParams()['REMOTE_ADDR'];
+        $ip = $this->getIpAddress($request);
         $progress = json_encode($request->getParsedBody());
 
         if(!$this->progressRepository->update($ip, $progress)){
@@ -46,7 +52,7 @@ class ProgressController
 
     public function delete(Request $request, Response $response, array $args): Response 
     {
-        $ip = $request->getServerParams()['REMOTE_ADDR'];
+        $ip = $this->getIpAddress($request);
 
         try {
             $this->progressRepository->delete($ip);
