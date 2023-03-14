@@ -37,7 +37,7 @@ async function updateData(url, data) {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ progress: data })
+        body: JSON.stringify(data)
     });
 
     const responseData = await response.json();
@@ -61,9 +61,10 @@ async function getQuestion(id = '1') {
     return responseObject;
 }
 
-async function getAnswers() {
-    const url = apiUrl + 'questions';
-    let responseObject = await getData(url);
+async function getResults() {
+    const url = apiUrl + 'saved/results';
+    let responseObject = JSON.parse(await getData(url));
+    console.log(responseObject);
     return responseObject;
 
 }
@@ -71,8 +72,7 @@ async function getAnswers() {
 async function getProgress() {
     const url = apiUrl + 'saved';
     let responseObject = await getData(url);
-    let parsedObject = JSON.parse(responseObject)
-    return parsedObject == null ? null : parsedObject.progress;
+    return responseObject;
 }
 
 async function resetProgress() {
@@ -103,12 +103,12 @@ async function saveProgress() {
     if (loadedProgress == null) {
         loadedProgress = [];
     }
-    loadedProgress[currentDetails.id] = value;
+    let envelope = {
+        questionId: currentDetails.id,
+        answer: value
+    };
 
-    if (await updateProgress(loadedProgress) == loadedProgress) {
-        console.log('happened');
-    }
-
+    await updateProgress(envelope);
     nextQuestion();
 }
 
@@ -123,22 +123,17 @@ async function nextQuestion() {
 }
 
 async function showResults() {
-    let correctAnswers = await getAnswers();
-    let result = 0;
+    let correctAnswers = await getResults();
     let details = [];
-    for (let i = 0; i < loadedProgress.length-1; i++) {
-        let obj = {
-            id: correctAnswers[i].id
-        };
-        if(loadedProgress[i+1] == correctAnswers[i].correct_answer){
-            obj.correct = true;
-            result += 1;
-        } else {
-            obj.correct = false;
-        }
-        details.push(obj);
+    for (let i = 1; i < correctAnswers.length; i++) {
+        details.push(
+            {
+                correct: correctAnswers[i],
+                id: i
+            }
+        );
     }
-    details.result = result;
+    details.result = correctAnswers.filter((value)=>value).length;
     hideLoader(spinnerContainer);
     container.append(buildResults(details));
 }
@@ -149,14 +144,12 @@ const init = async function () {
         let data;
         if (progress === null) {
             data = await getQuestion(1);
-        } else {
-            loadedProgress = progress;
-            data = await getQuestion(loadedProgress.length);
-        }
-
-        if (data.status == false) {
+        } else if(progress.lastPage) {
             showResults();
             return;
+        } else {
+            loadedProgress = progress;
+            data = await getQuestion(loadedProgress.progress.questionId + 1);
         }
         hideLoader(spinnerContainer);
         container.append(buildQuestion(data));

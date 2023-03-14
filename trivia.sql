@@ -14,11 +14,6 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-
--- Dumping database structure for trivia
-CREATE DATABASE IF NOT EXISTS `trivia` /*!40100 DEFAULT CHARACTER SET latin1 */;
-USE `trivia`;
-
 -- Dumping structure for table trivia.questions
 CREATE TABLE IF NOT EXISTS `questions` (
   `id` int(9) unsigned NOT NULL AUTO_INCREMENT,
@@ -35,19 +30,6 @@ INSERT INTO `questions` (`id`, `question`, `correct_answer`, `choices`) VALUES
 	(3, 'Today is?', 4, '["never","now","tomorrow","the day"]'),
 	(4, 'test 3', 3, '["1","2","3","4"]'),
 	(5, 'Question 5', 4, '["incorrect","incorrect","incorrect","correct"]');
-
--- Dumping structure for table trivia.saved
-CREATE TABLE IF NOT EXISTS `saved` (
-  `id` int(9) unsigned NOT NULL AUTO_INCREMENT,
-  `ip` varchar(12) CHARACTER SET utf8 DEFAULT NULL,
-  `progress` varchar(500) CHARACTER SET utf8 DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `ip` (`ip`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
-
--- Dumping data for table trivia.saved: ~1 rows (approximately)
-INSERT INTO `saved` (`id`, `ip`, `progress`) VALUES
-	(14, '172.23.0.1', '{"progress":[null,"1","3","4","1","1"]}');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

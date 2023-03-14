@@ -6,42 +6,59 @@ use App\Repositories\ProgressRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use RuntimeException;
+use App\Helpers\IpGetter;
+use App\Repositories\QuestionRepository;
 
 class ProgressController
 {
 
-    function __construct(private ProgressRepository $progressRepository)
+    function __construct(
+        private ProgressRepository $progressRepository,
+        private QuestionRepository $questionRepository
+        )
     {
     }
 
-    private function getIpAddress(Request $request): string
-    {
-        return $request->getServerParams()['REMOTE_ADDR'];
-    }
 
-    public function get(Request $request, Response $response, array $args): Response 
+    public function get(Request $request, Response $response, array $args): Response
     {
-        $ip = $this->getIpAddress($request);
+        $ip = IpGetter::getIpAddress($request);
 
-        try {
-            $payload = $this->progressRepository->get($ip);
-        } catch (\RuntimeException $e) {
-            $this->progressRepository->create($ip);
-            $payload = $this->progressRepository->get($ip);
+        $data = $this->progressRepository->get($ip) ?? $this->progressRepository->create($ip);
+
+        if($data['progress'] != null){
+            $decodedProgress = json_decode($data['progress'], true);
+            $payload = [
+                'progress' => $decodedProgress,
+                'lastPage' => $decodedProgress['questionId'] == $this->questionRepository->countEntries() ? true : false
+            ];
+        } else {
+            $payload = null;
         }
-        $payload = $payload['progress'];
+
         $response->getBody()->write(json_encode($payload));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
-    public function save(Request $request, Response $response, array $args): Response 
+    public function save(Request $request, Response $response, array $args): Response
     {
-        $ip = $this->getIpAddress($request);
-        $progress = json_encode($request->getParsedBody());
+        
+        $ip = IpGetter::getIpAddress($request);
 
-        if(!$this->progressRepository->update($ip, $progress)){
-            throw new \RuntimeException('No progress found', 400);
+        $progress = $request->getParsedBody();
+        $restoredProgress = $this->progressRepository->get($ip);
+        $correctAnswers = json_decode($restoredProgress['correct_answers']);
+
+        if($restoredProgress == null){
+            throw new \RuntimeException('Server error', 500);
         }
+
+        array_push(
+            $correctAnswers,
+            $progress['answer'] == $this->questionRepository->getAnswer($progress['questionId'])
+        );
+
+        $this->progressRepository->update($ip, json_encode($progress), json_encode($correctAnswers));
 
         $payload = $this->progressRepository->get($ip);
         $payload = $payload['progress'];
@@ -50,9 +67,9 @@ class ProgressController
         return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
-    public function delete(Request $request, Response $response, array $args): Response 
+    public function delete(Request $request, Response $response, array $args): Response
     {
-        $ip = $this->getIpAddress($request);
+        $ip = IpGetter::getIpAddress($request);
 
         try {
             $this->progressRepository->delete($ip);
@@ -61,5 +78,20 @@ class ProgressController
         }
 
         return $response->withStatus(200);
+    }
+
+    public function getResults(Request $request, Response $response, array $args): Response
+    {
+        $ip = IpGetter::getIpAddress($request);
+
+        try {
+            $payload = $this->progressRepository->getResults($ip);
+        } catch (\RuntimeException $th) {
+            return $response->withStatus(404);
+        }
+
+        $response->getBody()->write(json_encode($payload));
+
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 }

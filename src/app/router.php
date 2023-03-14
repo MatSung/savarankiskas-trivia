@@ -14,11 +14,13 @@ $app->get('/', function (Request $request, Response $response): Response {
 $app->group('/api/v1', function (RouteCollectorProxy $group) {
     $group->group('/questions', function (RouteCollectorProxy $group) {
         $group->get('/{id}', [QuestionController::class, 'find']);
-        $group->get('', [QuestionController::class, 'getAnswers']);
+        // $group->get('', [QuestionController::class, 'getAnswers']);
     });
+
 
     $group->group('/saved', function (RouteCollectorProxy $group) {
         $group->get('', [ProgressController::class, 'get']);
+        $group->get('/results', [ProgressController::class, 'getResults']);
         $group->post('', [ProgressController::class, 'save']);
         $group->delete('', [ProgressController::class, 'delete']);
     });

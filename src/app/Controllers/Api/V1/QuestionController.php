@@ -13,15 +13,15 @@ class QuestionController
     {
     }
 
-    public function find(Request $request, Response $response, array $args): Response 
+    public function find(Request $request, Response $response, array $args): Response
     {
-        $id = $args['id'] ?? NULL;
+        $id = $args['id'];
 
-        if(!$id){
-            throw new RuntimeException('No ID Provided', 400);
+        $data = $this->questionRepository->getSingleQuestion($id);
+
+        if(!isset($data)){
+            throw new RuntimeException('Question not found', 400);
         }
-
-        $data = $this->questionRepository->find($id);
 
         $data['choices'] = json_decode($data['choices']);
 
@@ -29,7 +29,7 @@ class QuestionController
 
         $response->getBody()->write(json_encode($payload));
 
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
     public function getAnswers(Request $request, Response $response, array $args): Response
@@ -38,6 +38,6 @@ class QuestionController
 
         $response->getBody()->write(json_encode($payload));
 
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 }
